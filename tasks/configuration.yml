@@ -11,3 +11,4 @@
   service:
     name: "{{ isc_dhcp_server_service }}"
     state: started
+    enabled: yes
