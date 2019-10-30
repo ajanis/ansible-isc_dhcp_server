@@ -1,17 +1,26 @@
-Ansible-isc_dhcp_server
-=========
+# Ansible-isc_dhcp_server
+
+<!-- MarkdownTOC -->
+
+- Requirements
+- Role Variables
+- Dependencies
+- Example Group Variables
+- Example Playbook
+- License
+- Author Information
+
+<!-- /MarkdownTOC -->
 
 Set up an ISC DHCP Server as part of the Foreman build server Project
 
 This role is part of a project that will configure a Foreman build environment with optional TFTP and DHCP smart proxies, and an NGINX webserver for serving static content and acting as a reverse-proxy to Foreman.
 
-Requirements
-------------
+## Requirements
 
 N/A
 
-Role Variables
---------------
+## Role Variables
 ```
 isc_dhcp_server_omapi_port: 7911
 
@@ -26,14 +35,12 @@ isc_dhcp_server_subnet:
 
 ```
 
-Dependencies
-------------
+## Dependencies
 
 Additonal variables may be set in group_vars for configuring Foreman, nginx, isc-dhcp server, and tftp server
 
 
-Example Group Variables
-----------
+## Example Group Variables
 ```
 www_domain: home.example.com
 foreman_hostname: foreman
@@ -68,8 +75,7 @@ isc_dhcp_server_subnet:
     range: 192.168.121.20 192.168.121.100
 ```
 
-Example Playbook
-----------------
+## Example Playbook
 ```
 - name: "Deploy Foreman Server"
   hosts: foreman
@@ -97,12 +103,10 @@ Example Playbook
       when: foreman_proxy_tftp
 ```
 
-License
--------
+## License
 
 MIT
 
-Author Information
-------------------
+## Author Information
 
 Created by Alan Janis
