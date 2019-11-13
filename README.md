@@ -21,17 +21,22 @@ This role is part of a project that will configure a Foreman build environment w
 N/A
 
 ## Role Variables
-```
+```yaml
 isc_dhcp_server_omapi_port: 7911
 
-isc_dhcp_server_subnet:
-  - netaddress: 192.168.121.0
-    netmask: 255.255.255.0
-    gateway: 192.168.121.1
-    domain: "{{ www_domain | default(ansible_domain) }}"
-    domain_search: "{{ www_domain | default(ansible_domain) }}"
-    dns: 192.168.121.1
-    range: 192.168.121.20 192.168.121.100
+isc_dhcp_server_subnets:
+  - name: "10.0.10.0/24"
+    network: "10.0.10.0"
+    mask: "255.255.255.0"
+    gateway: "10.0.10.1"
+    from_ip: "10.0.10.240"
+    to_ip: "10.0.10.250"
+    vlanid:
+    mtu: 9000
+    domains:
+    - "{{ www_domain }}"
+    dns_primary: 10.0.10.1
+    dns_secondary:
 
 ```
 
@@ -41,7 +46,7 @@ Additonal variables may be set in group_vars for configuring Foreman, nginx, isc
 
 
 ## Example Group Variables
-```
+```yaml
 www_domain: home.example.com
 foreman_hostname: foreman
 
@@ -64,43 +69,123 @@ nginx_vhosts:
         docroot: "/usr/share/nginx/html"
       - name: 50x.html
         docroot: "/usr/share/nginx/html"
-
-isc_dhcp_server_subnet:
-  - netaddress: 192.168.121.0
-    netmask: 255.255.255.0
-    gateway: 192.168.121.1
-    domain: "{{ www_domain | default(ansible_domain) }}"
-    domain_search: "{{ www_domain | default(ansible_domain) }}"
-    dns: 192.168.121.1
-    range: 192.168.121.20 192.168.121.100
 ```
+
+**PROTIP!!** If deploying isc-dhcp-server as part of foreman setup, use ```foreman_proxy_dhcp_subnets``` in your group_vars to configure both isc-dhcp-server and foreman DHCP smart-proxy.
+
+```yaml
+foreman_proxy_dhcp_subnets:
+  - name: "10.0.10.0/24"
+    network: "10.0.10.0"
+    mask: "255.255.255.0"
+    gateway: "10.0.10.1"
+    from_ip: "10.0.10.240"
+    to_ip: "10.0.10.250"
+    vlanid:
+    mtu: 9000
+    domains:
+    - "{{ www_domain }}"
+    dns_primary: 10.0.10.1
+    dns_secondary:
+```
+
 
 ## Example Playbook
-```
+```yaml
 - name: "Deploy Foreman Server"
-  hosts: foreman
-  become: True
+  hosts: all
   remote_user: root
   tasks:
 
+    - setup:
+    - include_role:
+        name: common
+      tags:
+        - common
+
+    - include_role:
+        name: isc_dhcp_server
+        public: yes
+        apply:
+          tags:
+            - dhcp
+      when: foreman_proxy_dhcp
+      tags:
+        - dhcp
+
+    - include_role:
+        name: tftp
+        public: yes
+        apply:
+          tags:
+            - tftp
+      when: foreman_proxy_tftp
+      tags:
+        - tftp
+
+    - include_role:
+        name: nginx
+        public: yes
+        apply:
+          tags:
+            - nginx
+      tags:
+        - nginx
+
+    - include_role:
+        name: awx
+        public: yes
+        apply:
+          tags:
+            - awx
+      tags:
+        - awx
+
+    - include_role:
+        name: docker
+        public: yes
+        apply:
+          tags:
+            - docker
+      tags:
+        - docker
+
+    - include_role:
+        name: awx
+        tasks_from: update_ca.yml
+        public: yes
+        apply:
+          tags:
+            - awx
+      tags:
+        - awx
 
     - include_role:
         name: foreman
+        public: yes
       tags:
         - install
         - configure
         - foreman
-  
-    - include_role:
-        name: nginx
-  
-    - include_role:
-        name: isc_dhcp_server
-      when: foreman_proxy_dhcp
+        - smartproxy
 
     - include_role:
-        name: tftp
-      when: foreman_proxy_tftp
+        name: foreman
+        public: yes
+        tasks_from: customize_config.yml
+        apply:
+          tags:
+            - customize
+      tags:
+        - customize
+
+    - include_role:
+        name: foreman
+        public: yes
+        tasks_from: host-build.yml
+      tags:
+        - hostcreate
+        - hostcleanup
 ```
 
 ## License
