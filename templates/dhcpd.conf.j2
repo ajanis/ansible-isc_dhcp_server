@@ -27,7 +27,7 @@ subnet {{ net.network }} netmask {{ net.mask }} {
   option routers               {{ net.gateway }};
   {% if net.domains is defined and net.domains != None %}
   option domain-name           "{{ net.domains[0] }}";
-  option domain-search         "{% for dn in net.domains %}{{ dn }}{% if not loop.last %},{% endif %}{% endfor %}"
+  option domain-search         "{% for dn in net.domains %}{{ dn }}{% if not loop.last %},{% endif %}{% endfor %};"
   {% endif %}
   {% if net.dns_primary is defined and net.dns_primary != None %}
     {% if net.dns_secondary is defined and net.dns_secondary != None %}
