@@ -1,4 +1,11 @@
 ---
+- set_fact:
+    isc_dhcp_server_pkg: "{{ isc_dhcp_server_pkg }}"
+    cacheable: yes
+- set_fact:
+    isc_dhcp_server_service: "{{ isc_dhcp_server_service }}"
+    cacheable: yes
+
 - name: install isc-dhcp-server
   package:
     name: "{{ isc_dhcp_server_pkg }}"
