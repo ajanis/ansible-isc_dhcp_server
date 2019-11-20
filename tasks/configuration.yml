@@ -9,6 +9,6 @@
 
 - name: start isc-dhcp-server service
   service:
-    name: "{{ isc_dhcp_server_service }}"
+    name: "{{ isc_dhcp_server_servicename }}"
     state: started
     enabled: yes
