@@ -1,5 +1,5 @@
 ---
 - name: install isc-dhcp-server
   package:
-    name: "{{ isc_dhcp_server_pkgname }}"
+    name: "{{ isc_dhcp_server_pkg }}"
     state: present

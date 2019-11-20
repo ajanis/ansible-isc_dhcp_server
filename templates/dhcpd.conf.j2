@@ -1,5 +1,4 @@
 #jinja2: trim_blocks: True, lstrip_blocks: True
-# {{ ansible_managed }}
 
 omapi-port {{ isc_dhcp_server_omapi_port }};
 ddns-update-style none;
@@ -21,7 +20,7 @@ if exists user-class and option user-class = "iPXE" {
   filename "undionly.kpxe";
 }
 
-{% if foreman_proxy_dhcp_subnets is defined and foreman_proxy_dhcp_subnets != None %}
+{% if foreman_proxy_dhcp_subnets %}
 {% for net in foreman_proxy_dhcp_subnets %}
 subnet {{ net.network }} netmask {{ net.mask }} {
   option routers               {{ net.gateway }};
@@ -29,8 +28,8 @@ subnet {{ net.network }} netmask {{ net.mask }} {
   option domain-name           "{{ net.domains[0] }}";
   option domain-search         "{% for dn in net.domains %}{{ dn }}{% if not loop.last %},{% endif %}{% endfor %}";
   {% endif %}
-  {% if net.dns_primary is defined and net.dns_primary != None %}
-    {% if net.dns_secondary is defined and net.dns_secondary != None %}
+  {% if net.dns_primary!= None %}
+    {% if net.dns_secondary %}
   option domain-name-servers   {{ net.dns_primary }}, {{ net.dns_secondary }};
     {% else %}
   option domain-name-servers   {{ net.dns_primary }};
@@ -39,16 +38,16 @@ subnet {{ net.network }} netmask {{ net.mask }} {
   range                        {{ net.from_ip }} {{ net.to_ip }};
 }
 {% endfor %}
-{% elif isc_dhcp_server_subnets is defined and isc_dhcp_server_subnets != None %}
+{% elif isc_dhcp_server_subnets %}
 {% for net in isc_dhcp_server_subnets %}
 subnet {{ net.network }} netmask {{ net.mask }} {
   option routers               {{ net.gateway }};
-  {% if net.domains is defined and net.domains != None %}
+  {% if net.domains %}
   option domain-name           "{{ net.domains[0] }}";
   option domain-search         "{% for dn in net.domains %}{{ dn }}{% if not loop.last %},{% endif %}{% endfor %}";
   {% endif %}
-  {% if net.dns_primary is defined and net.dns_primary != None %}
-    {% if net.dns_secondary is defined and net.dns_secondary != None %}
+  {% if net.dns_primary %}
+    {% if net.dns_secondary %}
   option domain-name-servers   {{ net.dns_primary }}, {{ net.dns_secondary }};
     {% else %}
   option domain-name-servers   {{ net.dns_primary }};
