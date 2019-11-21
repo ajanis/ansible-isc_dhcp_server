@@ -6,9 +6,3 @@
     backup: yes
   notify:
     - restart isc-dhcp-server
-
-- name: start isc-dhcp-server service
-  service:
-    name: "{{ isc_dhcp_server_service }}"
-    state: started
-    enabled: yes

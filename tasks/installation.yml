@@ -5,7 +5,7 @@
     state: present
 
 - name: start isc-dhcp-server service
-  service:
+  systemd:
     name: "{{ isc_dhcp_server_service }}"
     state: started
     enabled: yes
