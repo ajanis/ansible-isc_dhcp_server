@@ -17,10 +17,10 @@
 - name: Verify the dhcpd service is listening
   command: nmap --script broadcast-dhcp-discover
   when: dhcpd_restarted is changed
-  until: dhcpd_start_attempt.rc == "0"
+  register: dhcpd_start_attempt
+  until: dhcpd_start_attempt.rc == 0
   retries: 5
   delay: 5
-  register: dhcpd_start_attempt
 
 - name: Get dhcpd journald logs if service does not appear to be up
   shell: journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value isc-dhcp-server.service`
