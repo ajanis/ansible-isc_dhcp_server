@@ -15,12 +15,11 @@
   when: dhcpd_config_copy is changed
 
 - name: Verify the dhcpd service is listening
-  wait_for:
-    host: 0.0.0.0
-    port: 68
-    delay: 5
+  command: nmap --script broadcast-dhcp-discover
   when: dhcpd_restarted is changed
-  ignore_errors: yes
+  until: dhcpd_start_attempt.rc == "0"
+  retries: 5
+  delay: 5
   register: dhcpd_start_attempt
 
 - name: Get dhcpd journald logs if service does not appear to be up
