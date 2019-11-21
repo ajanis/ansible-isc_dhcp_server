@@ -4,5 +4,30 @@
     src: dhcpd.conf.j2
     dest: /etc/dhcp/dhcpd.conf
     backup: yes
-  notify:
-    - restart isc-dhcp-server
+  register: dhcpd_config_copy
+
+- name: Restart the dhcpd service
+  systemd:
+    name: isc-dhcp-server
+    state: restarted
+    enabled: yes
+  register: dhcpd_restarted
+  when: dhcpd_config_copy is changed
+
+- name: Verify the dhcpd service is listening
+  wait_for:
+    host: 0.0.0.0
+    port: 68
+    delay: 5
+  when: dhcpd_restarted is changed
+  ignore_errors: yes
+  register: dhcpd_start_attempt
+
+- name: Get dhcpd journald logs if service does not appear to be up
+  shell: journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value isc-dhcp-server.service`
+  register: isc_dhcpd_journal
+  when: dhcpd_start_attempt.failed is defined and dhcpd_start_attempt.failed == True
+
+- fail:
+    msg: "{{ isc_dhcpd_journal.stdout_lines }}"
+  when: dhcpd_start_attempt.failed is defined and dhcpd_start_attempt.failed == True
