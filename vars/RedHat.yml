@@ -1,3 +1,6 @@
 ---
-isc_dhcp_server_pkg: dhcp
+isc_dhcp_server_pkg:
+  - dhcp
+  - net-tools
+  - nmap
 isc_dhcp_server_service: dhcpd
