@@ -1,11 +1,11 @@
 ---
-- name: install isc-dhcp-server
+- name: Install isc-dhcp-server
   package:
     name: "{{ isc_dhcp_server_pkg }}"
     state: present
 
-- name: start isc-dhcp-server service
+- name: Enable isc-dhcp-server service
   systemd:
     name: "{{ isc_dhcp_server_service }}"
-    state: started
     enabled: yes
+    daemon_reload: yes

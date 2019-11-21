@@ -1,10 +1,12 @@
 ---
-- name: template isc-dhcp-server dhcpd.conf
+- name: Build template isc-dhcp-server dhcpd.conf
   template:
     src: dhcpd.conf.j2
     dest: /etc/dhcp/dhcpd.conf
     backup: yes
-  register: dhcpd_config_copy
+  notify: "restart_dhcp_server"
+
+- meta: flush_handlers
 
 - name: Restart the dhcpd service
   systemd:
@@ -12,7 +14,8 @@
     state: restarted
     enabled: yes
   register: dhcpd_restarted
-  when: dhcpd_config_copy is changed
+  when:
+    - dhcp_require_restart | default(false)
 
 - name: Verify the dhcpd service is listening
   command: nmap --script broadcast-dhcp-discover
@@ -25,8 +28,8 @@
 - name: Get dhcpd journald logs if service does not appear to be up
   shell: journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value isc-dhcp-server.service`
   register: isc_dhcpd_journal
-  when: dhcpd_start_attempt.failed is defined and dhcpd_start_attempt.failed == True
+  when: dhcpd_start_attempt.failed | default(false)
 
 - fail:
     msg: "{{ isc_dhcpd_journal.stdout_lines }}"
-  when: dhcpd_start_attempt.failed is defined and dhcpd_start_attempt.failed == True
+  when: dhcpd_start_attempt.failed | default(false)
