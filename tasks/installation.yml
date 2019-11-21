@@ -3,3 +3,9 @@
   package:
     name: "{{ isc_dhcp_server_pkg }}"
     state: present
+
+- name: start isc-dhcp-server service
+  service:
+    name: "{{ isc_dhcp_server_service }}"
+    state: started
+    enabled: yes
