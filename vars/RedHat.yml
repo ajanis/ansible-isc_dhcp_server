@@ -3,4 +3,8 @@ isc_dhcp_server_pkg:
   - dhcp
   - net-tools
   - nmap
+
 isc_dhcp_server_service: dhcpd
+isc_dhcp_server_confdir: /etc/dhcp
+isc_dhcp_server_configfile: "{{ isc_dhcp_server_confdir }}/dhcpd.conf"
+isc_dhcp_server_pidfile: /var/run/dhcpd.pid
