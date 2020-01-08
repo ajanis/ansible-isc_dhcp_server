@@ -24,4 +24,8 @@ OPTIONS="{{ isc_dhcp_server_default_options }}"
 
 # On what interfaces should the DHCP server (dhcpd) serve DHCP requests?
 #	Separate multiple interfaces with spaces, e.g. "eth0 eth1".
+{% if isc_dhcp_server_default_interfaces is defined and isc_dhcp_server_default_interfaces != None %}
 INTERFACES="{{ isc_dhcp_server_default_interfaces.join(' ') }}"
+{% else %}
+#INTERFACES=""
+{% endif %}
