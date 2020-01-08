@@ -2,5 +2,4 @@
 isc_dhcp_server_omapi_port: 7911
 isc_dhcp_server_subnets: []
 isc_dhcp_server_default_options:
-isc_dhcp_server_default_interfaces:
-  - "{{ ansible_default_ipv4.interface }}"
+isc_dhcp_server_default_interfaces: []
