@@ -2,7 +2,7 @@
 - name: Build template isc-dhcp-server dhcpd.conf
   template:
     src: dhcpd.conf.j2
-    dest: /etc/dhcp/dhcpd.conf
+    dest: "{{ isc_dhcp_server_configfile }}"
     backup: yes
   notify: "restart_dhcp_server"
 
@@ -10,7 +10,7 @@
 
 - name: Restart the dhcpd service
   systemd:
-    name: isc-dhcp-server
+    name: "{{ isc_dhcp_server_service }}"
     state: restarted
     enabled: yes
   register: dhcpd_restarted
@@ -26,7 +26,7 @@
   delay: 5
 
 - name: Get dhcpd journald logs if service does not appear to be up
-  shell: journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value isc-dhcp-server.service`
+  shell: "journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value {{ isc_dhcp_server_service }}.service`"
   register: isc_dhcpd_journal
   when: dhcpd_start_attempt.failed | default(false)
 
