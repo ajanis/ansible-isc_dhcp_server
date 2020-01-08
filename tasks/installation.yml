@@ -4,6 +4,15 @@
     name: "{{ isc_dhcp_server_pkg }}"
     state: present
 
+- name: "Create /etc/default file for isc-dhcp-server service"
+  template:
+    src: /etc/default/isc-dhcp-server.j2
+    dest: "/etc/default/{{ isc_dhcp_server_service }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_dhcp_server
+
 - name: Enable isc-dhcp-server service
   systemd:
     name: "{{ isc_dhcp_server_service }}"
