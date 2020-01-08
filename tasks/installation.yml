@@ -6,7 +6,7 @@
 
 - name: "Create /etc/default file for isc-dhcp-server service"
   template:
-    src: /etc/default/isc-dhcp-server.j2
+    src: etc/default/isc-dhcp-server.j2
     dest: "/etc/default/{{ isc_dhcp_server_service }}"
     owner: root
     group: root
