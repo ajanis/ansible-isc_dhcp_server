@@ -3,3 +3,6 @@ isc_dhcp_server_omapi_port: 7911
 isc_dhcp_server_subnets: []
 isc_dhcp_server_default_options:
 isc_dhcp_server_default_interfaces: []
+isc_dhcp_server_allowed_ports:
+  - "67-69/udp"
+  - "7911/tcp"
