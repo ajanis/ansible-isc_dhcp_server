@@ -15,11 +15,11 @@
     enabled: yes
   register: dhcpd_restarted
   when:
-    - dhcp_require_restart | default(false)
+    - dhcpd_require_restart | default(false)
 
 - name: Verify the dhcpd service is listening
-  command: nmap --script broadcast-dhcp-discover
-  when: dhcpd_restarted is changed
+  command:
+    cmd: 'nmap -sU -p 67  localhost --open | egrep -q "67/udp.*open"'
   register: dhcpd_start_attempt
   until: dhcpd_start_attempt.rc == 0
   retries: 5
