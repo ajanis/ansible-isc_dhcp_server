@@ -23,7 +23,7 @@ if exists user-class and option user-class = "iPXE" {
 
 {% if foreman_proxy_dhcp_subnets is defined and foreman_proxy_dhcp_subnets != None %}
 {% for net in foreman_proxy_dhcp_subnets %}
-subnet {{ net.network }} netmask {{ net.mask }} {
+subnet {{ net.network }} netmask {% if net.mask is defined %}{{ net.mask }}{% elif net.cidr is defined %}{% set host_prefix = net.network + '/' + (net.cidr|string) %}{{ host_prefix | ipaddr('netmask') }}{% endif %} {
   option routers               {{ net.gateway }};
   {% if net.domains is defined and net.domains != None %}
   option domain-name           "{{ net.domains[0] }}";
@@ -41,7 +41,7 @@ subnet {{ net.network }} netmask {{ net.mask }} {
 {% endfor %}
 {% elif isc_dhcp_server_subnets is defined and isc_dhcp_server_subnets != None %}
 {% for net in isc_dhcp_server_subnets %}
-subnet {{ net.network }} netmask {{ net.mask }} {
+subnet {{ net.network }} netmask {% if net.mask is defined %}{{ net.mask }}{% elif net.cidr is defined %}{% set host_prefix = net.network + '/' + (net.cidr|string) %}{{ host_prefix | ipaddr('netmask') }}{% endif %} {
   option routers               {{ net.gateway }};
   {% if net.domains is defined and net.domains != None %}
   option domain-name           "{{ net.domains[0] }}";
