@@ -3,7 +3,7 @@
 
 omapi-port {{ isc_dhcp_server_omapi_port }};
 ddns-update-style none;
-
+next-server {{ ansible_default_ipv4.address }};
 default-lease-time 600;
 max-lease-time 7200;
 log-facility local7;
