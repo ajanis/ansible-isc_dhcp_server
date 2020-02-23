@@ -24,6 +24,7 @@
   until: dhcpd_start_attempt.rc == 0
   retries: 5
   delay: 5
+  changed_when: False
 
 - name: Get dhcpd journald logs if service does not appear to be up
   shell: "journalctl _SYSTEMD_INVOCATION_ID=`systemctl show -p InvocationID --value {{ isc_dhcp_server_service }}.service`"
