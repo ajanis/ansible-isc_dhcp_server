@@ -4,9 +4,15 @@
     src: dhcpd.conf.j2
     dest: "{{ isc_dhcp_server_configfile }}"
     backup: yes
+    mode: 755
   notify: "restart_dhcp_server"
 
-- meta: flush_handlers
+- name: Ensure dhcpd data directory is present with correct permissions
+  file:
+    path: "{{ isc_dhcp_server_confdir }}"
+    state: directory
+    mode: 0755
+    recurse: yes
 
 - name: Restart the dhcpd service
   systemd:
